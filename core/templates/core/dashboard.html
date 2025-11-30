@@ -1,0 +1,108 @@
+{% extends "core/base.html" %}
+{% block titulo %}Dashboard{% endblock %}
+
+{% block conteudo %}
+
+<h2 class="mb-4">Dashboard Financeiro</h2>
+
+<!-- CARDS DO MÊS -->
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card border-success shadow-sm">
+            <div class="card-body">
+                <h5 class="text-success">Receitas ({{ mes_atual }}/{{ ano_atual }})</h5>
+                <h3 class="fw-bold">R$ {{ receitas|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-danger shadow-sm">
+            <div class="card-body">
+                <h5 class="text-danger">Despesas ({{ mes_atual }}/{{ ano_atual }})</h5>
+                <h3 class="fw-bold">R$ {{ despesas|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-primary shadow-sm">
+            <div class="card-body">
+                <h5 class="text-primary">Saldo ({{ mes_atual }}/{{ ano_atual }})</h5>
+                <h3 class="fw-bold {% if saldo < 0 %}text-danger{% else %}text-success{% endif %}">
+                    R$ {{ saldo|floatformat:2 }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- RESUMO ANUAL -->
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card border-success">
+            <div class="card-body">
+                <h6 class="text-success">Receitas no ano</h6>
+                <h4>R$ {{ receitas_ano|floatformat:2 }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-body">
+                <h6 class="text-danger">Despesas no ano</h6>
+                <h4>R$ {{ despesas_ano|floatformat:2 }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h6 class="text-primary">Saldo no ano</h6>
+                <h4 class="{% if saldo_ano < 0 %}text-danger{% else %}text-success{% endif %}">
+                    R$ {{ saldo_ano|floatformat:2 }}
+                </h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ÚLTIMAS TRANSAÇÕES -->
+<h4 class="mt-4 mb-3">Últimas Transações</h4>
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+        <table class="table mb-0 table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in ultimas %}
+                <tr>
+                    <td>{{ t.data }}</td>
+                    <td>{{ t.descricao }}</td>
+                    <td>{{ t.tipo }}</td>
+                    <td>{{ t.categoria.nome }}</td>
+                    <td>R$ {{ t.valor|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Sem transações.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

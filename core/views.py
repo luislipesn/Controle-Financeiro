@@ -1,7 +1,10 @@
+from datetime import date
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
 from transacoes.models import Transacao
+from django.db import models
+
+
 
 
 MESES = [
@@ -21,33 +24,36 @@ MESES = [
 
 @login_required
 def home(request):
-    transacoes = Transacao.objects.all().order_by("-data")
+    hoje = date.today()
+    mes = hoje.month
+    ano = hoje.year
 
-    mes = request.GET.get("mes")
-    ano = request.GET.get("ano")
-    data_inicio = request.GET.get("data_inicio")
-    data_fim = request.GET.get("data_fim")
+    # Transações do mês
+    transacoes_mes = Transacao.objects.filter(data__month=mes, data__year=ano)
 
-    # FILTRO POR MÊS + ANO
-    if mes and ano:
-        transacoes = transacoes.filter(data__month=mes, data__year=ano)
+    receitas = transacoes_mes.filter(tipo="R").aggregate(total=models.Sum("valor"))["total"] or 0
+    despesas = transacoes_mes.filter(tipo="D").aggregate(total=models.Sum("valor"))["total"] or 0
+    saldo = receitas - despesas
 
-    # FILTRO POR PERÍODO DE DATAS
-    if data_inicio:
-        transacoes = transacoes.filter(data__gte=data_inicio)
+    # Últimas 5 transações
+    ultimas = Transacao.objects.order_by("-data")[:5]
 
-    if data_fim:
-        transacoes = transacoes.filter(data__lte=data_fim)
+    # Resumo anual
+    transacoes_ano = Transacao.objects.filter(data__year=ano)
+    receitas_ano = transacoes_ano.filter(tipo="R").aggregate(total=models.Sum("valor"))["total"] or 0
+    despesas_ano = transacoes_ano.filter(tipo="D").aggregate(total=models.Sum("valor"))["total"] or 0
+    saldo_ano = receitas_ano - despesas_ano
 
-    # RESUMO MENSAL (cardzinhos)
-    total_receitas = transacoes.filter(tipo="R").aggregate(Sum("valor"))["valor__sum"] or 0
-    total_despesas = transacoes.filter(tipo="D").aggregate(Sum("valor"))["valor__sum"] or 0
-    saldo = total_receitas - total_despesas
-
-    return render(request, "home.html", {
-        "transacoes": transacoes,
-        "meses": MESES,
-        "total_receitas": total_receitas,
-        "total_despesas": total_despesas,
+    contexto = {
+        "receitas": receitas,
+        "despesas": despesas,
         "saldo": saldo,
-    })
+        "ultimas": ultimas,
+        "receitas_ano": receitas_ano,
+        "despesas_ano": despesas_ano,
+        "saldo_ano": saldo_ano,
+        "mes_atual": mes,
+        "ano_atual": ano,
+    }
+
+    return render(request, "core/dashboard.html", contexto)
