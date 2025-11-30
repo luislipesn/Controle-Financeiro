@@ -1,5 +1,5 @@
 
-{% extends 'base.html' %}
+{% extends "core/base.html" %}
 
 {% block titulo %}Editar Transação{% endblock %}
 
@@ -27,8 +27,8 @@
     <div class="mb-3">
         <label class="form-label">Tipo</label>
         <select name="tipo" class="form-select">
-            <option value="receita" {% if transacao.tipo == 'receita' %}selected{% endif %}>Receita</option>
-            <option value="despesa" {% if transacao.tipo == 'despesa' %}selected{% endif %}>Despesa</option>
+            <option value="R" {% if transacao.tipo == 'R' %}selected{% endif %}>Receita</option>
+            <option value="D" {% if transacao.tipo == 'D' %}selected{% endif %}>Despesa</option>
         </select>
     </div>
 

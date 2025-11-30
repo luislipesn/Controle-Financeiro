@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "core/base.html" %}
 
 {% block titulo %}Minhas Transações{% endblock %}
 
@@ -107,7 +107,7 @@
             <td>{{ t.data }}</td>
             <td>{{ t.descricao }}</td>
             <td>R$ {{ t.valor }}</td>
-            <td class="{% if t.tipo == 'despesa' %}text-danger{% else %}text-success{% endif %}">
+            <td class="{% if t.tipo == 'D' %}text-danger{% else %}text-success{% endif %}">
                 {{ t.tipo|title }}
             </td>
             <td>{{ t.categoria }}</td>

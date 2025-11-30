@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "core/base.html" %}
 
 {% block titulo %}Nova Transação{% endblock %}
 
@@ -26,8 +26,8 @@
     <div class="mb-3">
         <label class="form-label">Tipo</label>
         <select name="tipo" class="form-select">
-            <option value="receita">Receita</option>
-            <option value="despesa">Despesa</option>
+            <option value="R">Receita</option>
+            <option value="D">Despesa</option>
         </select>
     </div>
 

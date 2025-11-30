@@ -1,0 +1,181 @@
+{% extends "core/base.html" %}
+
+{% block titulo %}Relatório Financeiro{% endblock %}
+
+{% block conteudo %}
+
+<h2 class="mb-4 fw-bold">📊 Relatório Financeiro</h2>
+
+<!-- CARD DE FILTROS -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white fw-bold">
+        🔎 Filtros de Pesquisa
+    </div>
+    <div class="card-body">
+
+        <form method="GET" class="row g-3">
+
+            <!-- Mês -->
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Mês</label>
+                <select name="mes" class="form-select">
+                    <option value="">Todos</option>
+                    {% for numero, nome in meses %}
+                        {% with numero_str=numero|stringformat:"s" mes_req=request.GET.mes|stringformat:"s" %}
+                            <option value="{{ numero }}" {% if mes_req == numero_str %}selected{% endif %}>
+                                {{ nome }}
+                            </option>
+                        {% endwith %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Ano -->
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Ano</label>
+                <input type="number" name="ano" class="form-control"
+                       value="{{ request.GET.ano }}">
+            </div>
+
+            <!-- Data início -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Data início</label>
+                <input type="date" name="data_inicio" class="form-control"
+                       value="{{ request.GET.data_inicio }}">
+            </div>
+
+            <!-- Data fim -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Data fim</label>
+                <input type="date" name="data_fim" class="form-control"
+                       value="{{ request.GET.data_fim }}">
+            </div>
+
+            <!-- Categoria -->
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Categoria</label>
+                <select name="categoria" class="form-select">
+                    <option value="">Todas</option>
+                    {% for c in categorias %}
+                        {% with cid=c.id|stringformat:"s" creq=request.GET.categoria|stringformat:"s" %}
+                            <option value="{{ c.id }}" {% if cid == creq %}selected{% endif %}>
+                                {{ c.nome }}
+                            </option>
+                        {% endwith %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Botões -->
+            <div class="col-12 d-flex justify-content-end mt-2">
+                <button class="btn btn-primary me-2">Filtrar</button>
+                <a href="{% url 'relatorio' %}" class="btn btn-secondary">Limpar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- RESUMO FINANCEIRO -->
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1 fw-semibold">Receitas</h6>
+                    <h3 class="text-success fw-bold">R$ {{ total_receitas|floatformat:2 }}</h3>
+                </div>
+                <i class="bi bi-arrow-up-circle text-success" style="font-size: 2.2rem;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1 fw-semibold">Despesas</h6>
+                    <h3 class="text-danger fw-bold">R$ {{ total_despesas|floatformat:2 }}</h3>
+                </div>
+                <i class="bi bi-arrow-down-circle text-danger" style="font-size: 2.2rem;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1 fw-semibold">Saldo</h6>
+                    <h3 class="fw-bold {% if saldo < 0 %}text-danger{% else %}text-success{% endif %}">
+                        R$ {{ saldo|floatformat:2 }}
+                    </h3>
+                </div>
+                <i class="bi bi-wallet2 text-primary" style="font-size: 2.2rem;"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- TABELA -->
+<div class="card shadow-sm border-0 mb-3">
+    <div class="card-header bg-dark text-white fw-bold">
+        📅 Transações Encontradas
+    </div>
+    <div class="card-body p-0">
+
+        <table class="table table-hover table-striped mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th class="text-end">Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transacoes %}
+                <tr>
+                    <td>{{ t.data }}</td>
+                    <td>{{ t.descricao }}</td>
+
+                    <td>
+                        {% if t.tipo == "R" %}
+                            <span class="badge bg-success">Receita</span>
+                        {% else %}
+                            <span class="badge bg-danger">Despesa</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ t.categoria.nome }}</td>
+
+                    <td class="text-end">R$ {{ t.valor|floatformat:2 }}</td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        Nenhuma transação encontrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- BOTÕES DE EXPORTAÇÃO -->
+<div class="d-flex justify-content-end gap-2">
+    <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-outline-secondary">
+        Exportar CSV
+    </a>
+
+    <a href="?{{ request.GET.urlencode }}&export=pdf" class="btn btn-outline-danger">
+        Exportar PDF
+    </a>
+</div>
+
+{% endblock %}
