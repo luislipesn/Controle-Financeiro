@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block titulo %}Editar Categoria{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-4">Editar Categoria</h2>
+
+<form method="POST" class="card p-4 shadow">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label">Nome</label>
+        <input type="text" name="nome" class="form-control" value="{{ categoria.nome }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="Ativa" {% if categoria.status == "Ativa" %}selected{% endif %}>Ativa</option>
+            <option value="Inativa" {% if categoria.status == "Inativa" %}selected{% endif %}>Inativa</option>
+        </select>
+    </div>
+
+    <button class="btn btn-primary">Salvar alterações</button>
+</form>
+{% endblock %}
