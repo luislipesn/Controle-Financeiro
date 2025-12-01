@@ -52,7 +52,6 @@
 
                     {% if user.is_authenticated %}
                     <span class="text-white me-3">Olá, {{ user.username }}</span>
-
                     <form action="{% url 'logout' %}" method="POST">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>

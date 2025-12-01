@@ -72,9 +72,11 @@ TEMPLATES = [
         },
     },
 ]
-LOGIN_URL = '/login/'                # página de login
-LOGIN_REDIRECT_URL = '/'             # para onde vai após login com sucesso
-LOGOUT_REDIRECT_URL = '/login/'      # para onde vai após logout
+
+
+LOGIN_URL = 'accounts/login/'                # página de login
+LOGIN_REDIRECT_URL = '/' 
+LOGOUT_REDIRECT_URL = '/accounts/login/'  # página após logout
 
 WSGI_APPLICATION = 'financeiro.wsgi.application'
 

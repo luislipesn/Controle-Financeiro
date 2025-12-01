@@ -11,7 +11,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 
-
+@login_required
 def gerar_pdf_profissional(transacoes, filtros):
     buffer = BytesIO()
 
